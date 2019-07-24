@@ -44,14 +44,14 @@ python -c 'import LogisticPredict; LogisticPredict.multiclass_predict_optim('Ima
 ```
 - Replace 'Image_Location' with the name of your image  
 - Replace 'Weights_Location' with the location of your desired weights  
-  -> The following weight locations are avaliable:
-        - Multiclass_weightsX Y
-          -- X refers to the number of training samples used
-          -- Y refers to the number of training iterations
-       'Multiclass_weights6k 5I/multiclass_weights.npy'
-       'Multiclass_weights6k 10I/multiclass_weights.npy'
-       'Multiclass_weights30k 5I/multiclass_weights.npy'
-       'Multiclass_weights60k 5I/multiclass_weights.npy'
+  -> The following weight locations are avaliable:  
+        - Multiclass_weightsX Y  
+          -- X refers to the number of training samples used  
+          -- Y refers to the number of training iterations  
+       'Multiclass_weights6k 5I/multiclass_weights.npy'   
+       'Multiclass_weights6k 10I/multiclass_weights.npy'  
+       'Multiclass_weights30k 5I/multiclass_weights.npy'  
+       'Multiclass_weights60k 5I/multiclass_weights.npy'  
        
    
 ## Training Custom Weights
