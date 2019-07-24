@@ -25,12 +25,39 @@ Numpy, Pandas, mlxtend, scipy, PIL
 2) Download zip file and you're ready to go!
 
 ## Usage
-### To run binary model on pre-trained hyperparameters
-- Place desired image in folder  
-- Run: 
+### Predicting Values:    
+#### To run binary model on pre-trained hyperparameters
+- Place desired image in project folder 
+- Run following command in project folder location: 
 ```
-python -c 'import LogisticPredict; LogisticPredict.('Image_Location','Weights_location')'
+python -c 'import LogisticPredict; LogisticPredict.binary_predict('Image_Location','Weights_location')'
 ```
 - Replace 'Image_Location' with the name of your image  
 - Replace 'Weights_Location' with the location of your desired weights  
   -> Only pretrained binary wieghts are in location - 'Binary_weights10k 10I/lc_trained_theta00'
+  
+#### To run multi-class model on pre-trained hyperparameters
+- Place desired image in project folder  
+- Run following command in project folder location: 
+```
+python -c 'import LogisticPredict; LogisticPredict.multiclass_predict_optim('Image_Location','Weights_location')'
+```
+- Replace 'Image_Location' with the name of your image  
+- Replace 'Weights_Location' with the location of your desired weights  
+  -> The following weight locations are avaliable:
+        - Multiclass_weightsX Y
+          -- X refers to the number of training samples used
+          -- Y refers to the number of training iterations
+       'Multiclass_weights6k 5I/multiclass_weights.npy'
+       'Multiclass_weights6k 10I/multiclass_weights.npy'
+       'Multiclass_weights30k 5I/multiclass_weights.npy'
+       'Multiclass_weights60k 5I/multiclass_weights.npy'
+       
+   
+## Training Custom Weights
+### Binary Training
+#### 'Create' Binary Data
+- Given a full MNIST dataset you can separate out the data corresponding to ones and zeros with the following command:
+```
+python -c 'import LogisticRegression; LogisticRegression.binary_clear_values('full_training_images_loc','full_training_')'
+```
