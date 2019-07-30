@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 from mlxtend.data import loadlocal_mnist
 from scipy.special import expit
-import pickle
 
 
 def process_data(m,select,normalize):
@@ -14,9 +13,12 @@ def process_data(m,select,normalize):
 
     DataX = np.asarray(DataX)
     DataY = np.asarray(DataY)
-    if normalize:
-        print("Normalizing Data!")
+    if normalize == 1:
+        print("Applying mean standard deviation to data!")
         DataX = (DataX - np.mean(DataX))/np.std(DataX)
+    if normalize == 2:
+        print("Applying sigmoid normalization to data!")
+        DataX = expit(DataX) 
     if select == 0:
         return DataX,DataY
     if select == 1:
@@ -26,7 +28,7 @@ def process_data(m,select,normalize):
     else:
         print("Please enter valid selection values. 0 = X and Y, 1 = X, 2 = Y")
 
-def binary_clear_values(X,y):
+def binary_clear_values(X,y,image_location,labels_location):
 
     Xtemp = np.ones([1,X.shape[1]])
     ytemp = np.array([1])
@@ -35,21 +37,21 @@ def binary_clear_values(X,y):
             ytemp = np.append( ytemp,y[val],axis = 0 )
             Xtemp = np.append( Xtemp,np.expand_dims(X[val],axis = 0),axis = 0 )
 
-    np.savetxt("mnist0-1_images.csv", Xtemp, delimiter=",")
-    np.savetxt("mnist0-1_labels.csv", ytemp, delimiter=",")
+    np.savetxt(image_location, Xtemp, delimiter=",")
+    np.savetxt(labels_location, ytemp, delimiter=",")
 
-def multiclass_create_data(y):
+def multiclass_create_data(y,theta_saveloc):
 
     for numClass in range(10): #Want to go from 0-9
         ytemp = np.array([1])
 
         for val in range(y.shape[0]):
             if y[val] == numClass:
-                ytemp = np.append( ytemp,np.array([1]),axis = 0 )
+                ytemp = np.appnd( ytemp,np.array([1]),axis = 0 )
             else:
                 ytemp = np.append( ytemp,np.array([0]),axis = 0 )
         ytemp = np.delete(ytemp,0,0)
-        np.savetxt("Multiclass_data60k/mnist"+str(numClass)+"_labels.csv", ytemp, delimiter=",")
+        np.savetxt(theta_saveloc+"mnist"+str(numClass)+"_labels.csv", ytemp, delimiter=",")
         print("Data processed for Class " + str(numClass) +"!")
         print("Data size:" + str(ytemp.shape))
 
@@ -67,28 +69,31 @@ def train_models(X,y,theta,saveLoc,returnError):
             error_hist.append(logistic_error(X,y))
     
     np.save(saveLoc,theta)
-    
     if returnError:
         return theta,error_hist
     else:
         return theta
 
-def logistic_error(y,theta):
+def logistic_error(X,y,theta):
 
-    pred = predict(X,theta)
-    return -(1/X.shape[0])* (np.matmul(y.T,np.log(pred)) + np.matmul((1-y.T),np.log(1-pred))  ) 
+    pred = np.expand_dims(predict(X,theta),axis = 1)
+    print(y.shape)
+    print(pred.shape)
+    return (1/X.shape[0])* (np.matmul(-y.T,np.log(pred)) + np.matmul((y-1).T, np.log(1-pred))) 
 
 def multiclass_logistic_error(theta):
-    X = process_data(60000,1,True)
+    X = process_data(60000,1,2)
+    print(theta.shape)
     tot_error = 0
 
     for numClass in range(10): #load each y class set into m x 10 matrix
         ytemp = pd.read_csv("Multiclass_data60k/mnist" +str(numClass)+"_labels.csv",header = None )
         ytemp = np.asarray(ytemp)
-        tot_error += logistic_error(ytemp,theta[numClass,:])
+        tot_error += logistic_error(X,ytemp,theta[numClass,:])
 
     return tot_error/10    
-               
+#def binary_logistic_error(theta):
+    
     
 def binary_classification_train():
     X = pd.read_csv("mnist0-1_images.csv")
@@ -133,6 +138,7 @@ def multiclass_classification_train(data_size):
 
 def predict(X,theta):
     pred = expit(np.matmul(X,theta.T))
+    #pred = np.matmul(X,theta.T)
     return pred
 
 
